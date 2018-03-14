@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+	<head>
+    	<title>Fedena Import Page</title>
+	    
+      <script src="js/min/angular.min.js"></script>
+      <script src="js/min/jquery-3.1.1.min.js"></script>
+      <script src="js/ErrorThrowingAPI.js"></script>
+      <script src="js/FirebaseContentScriptAPI.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+      
+	    <script src="js/app.js"></script>
+
+	    <link rel="stylesheet" href="styles/bootstrap.min.css">
+    	<style>
+      		/*div.col-md-1 {
+        		border: solid 1px black;
+  			    display: inline-block;
+      		}*/
+
+    	  	div[class^="col-"] {
+        		border: solid 1px black;
+        		display: inline-block;
+      		}
+      		div[class^="col-"]:nth-child(even) {
+        		background-color: #bfbfbf;
+      		}
+      		div[class^="col-"]:nth-child(odd) {
+        		background-color: #fff;
+      		}
+
+	      	div#table-containers {
+            clear: left;
+        		white-space: nowrap;
+        		overflow-x: scroll;
+      		}
+
+      		div.table-buttons {
+        		/*width: 100px;*/
+        		display: inline-block;
+        		padding-bottom: 5px;
+        		padding-top: 5px;
+        		border: solid 1px black;
+        		background-color: #fff;
+      		}
+      		div.table-buttons:nth-child(even) {
+        		background-color: #bfbfbf;
+      		}
+
+            div#left-arrow,
+            div#full-import,
+            div#adjust-student-data,
+            div#right-arrow {
+                float: left;
+            }
+
+            div#left-arrow,
+            div#right-arrow {
+                /*padding-left: 8px;*/
+                background-color: green;
+                width: 35px;
+                height: 50px;
+                margin-top: 120px;
+            }
+
+            button#left-button,
+            button#right-button {
+                font-size: 2em;
+                height: 50px;
+                width: 35px;
+            }
+
+            button.disabled-button {
+                color: #adadad;
+            }
+
+            div#full-import,
+            div#adjust-student-data {
+                width: 730px;
+            }
+
+            div#adjust-student-data {
+                /* hide initially */
+                display: none;
+            }
+
+      		button.table-buttons-minus {
+        		width: 35px;
+        		margin-left: 12px;
+      		}
+      		button.table-buttons-plus {
+        		width: 35px;
+        		margin-right: 15px;
+      		}
+
+      		body {
+        		width: 800px; /* 800px is max width */
+      		}
+    	</style>
+  	</head>
+  	<body ng-app="RIPSImportPageApp" ng-controller="MainController as ctrl">
+        <div>
+            <div id="left-arrow">
+                <button class="disabled-button" disabled id="left-button" ng-click="ctrl.scroll('L')">&lt;</button>
+            </div>
+
+            <div id="full-import">
+          		<h1 style="float:left;">Paste Student Details Below</h1>
+
+      		    <div style="float:left; margin-top: 10px; margin-bottom: 10px;"
+                ng-hide="ctrl.username">
+                <button id="signin" style="margin-left: 20px;height: 60px;"
+                  ng-click="ctrl.Signin()">Sign In </br> (Google)</button>
+              </div>
+
+              <div style="float:left; margin-top: 10px; margin-bottom: 10px;"
+                ng-show="ctrl.username">
+                <button id="signout" style="margin-left: 20px; height: 60px;"
+                  ng-click="ctrl.Signout()">Sign Out </br> (Google)</button>
+              </div>
+
+              <div style="padding-top: 10px;">
+                
+        		      <span style="padding-left: 30px;"
+                    ng-show="ctrl.username">Welcome, {{ ctrl.username }}</span>
+                  </br>
+                  <span style="padding-left: 30px;">Auto?</span>
+                  <input ng-model="ctrl.auto" type="checkbox"></input>
+                  </br>
+                  <span style="padding-left: 30px;"># added / fixed: {{ctrl.studentCount}}</span>
+      		    </div>
+
+      		    <textarea class="form-control" rows="7" id="comment"
+        	        placeholder="{{ ctrl.textareaWelcome }}"
+        		    ng-model="ctrl.studentData" ng-trim="false"></textarea>
+
+      		    <form class="form-inline" style="margin-top: 10px;">
+    				<div class="form-group">
+    		    		<label>Class Name / ID:</label>
+    		    		<input type="text" class="form-control" ng-model="ctrl.class" placeholder="Ex: Test Class">
+    		  		</div>
+    		  		<div class="form-group" style="margin-left: 5px;">
+    		    		<label>Batch Name / ID:</label>
+    		    		<input type="text" class="form-control" ng-model="ctrl.batch" placeholder="Ex: Test Batch">
+    		  		</div>
+                    <div class="form-group row" style="margin-top: 5px; margin-left: 0px;">
+                        <label>Admission Date:</label>
+                        <input type="text" class="form-control"
+                            ng-model="ctrl.admissionDate"
+                            ng-blur="ctrl.formatAdmissionDate()"
+                            placeholder="Ex: 01-Feb-2017">
+                    </div>
+
+                    <!-- Error / warning for admission date formatting -->
+                    <div class="form-group"
+                        ng-show="ctrl.admissionDateFormatError"
+                        style="margin-left: 18px; color: red; border: solid 2px red; padding: 2px; border-radius: 5px;">
+                        <span><strong>ERROR [{{ ctrl.admissionDateFormatErrorLocation }}]: USE FORMAT: DD-MMM-YYYY</strong></span>
+                    </div>
+                    <div class="form-group"
+                        ng-show="ctrl.admissionDateFormatWarning"
+                        style="margin-left: 18px; border: solid 2px black; padding: 2px; border-radius: 5px; background-color: yellow;">
+                        <span><strong>WARNING: DATE EMPTY! DEFAULT IS CURRENT DATE</strong></span>
+                    </div>
+    			</form>
+
+      		    <button type="button" class="btn btn-primary"
+                    style="margin: 10px;"
+        		    ng-click="ctrl.fillTable()">Create Table!</button>
+
+      		    <span ng-if="!ctrl.errorMessage && ctrl.delim">
+        		    <strong>
+          			    Data Details - Delim: "{{ ctrl.delim }}" - New-Line: "\n"
+        		    </strong>
+      		    </span>
+
+      		    <button type="button" class="btn btn-success"
+                    style="margin: 10px"
+        		    ng-click="ctrl.importStudents();"
+        		    ng-if="!ctrl.errorMessage && ctrl.delim">
+                    Import Students
+                </button>
+
+      		    <button type="button" class="btn btn-danger"
+                    style="margin: 10px"
+        		    ng-click="ctrl.clearChromeData();">
+                    Clear / Reset
+                </button>
+
+      		    <div ng-if="ctrl.errorMessage" class="row"
+        		    style="color: red; border: solid 2px red; margin: 5px; padding: 5px;">
+        		    <strong>
+          			    ERROR: {{ ctrl.errorMessage }}
+        		    </strong>
+      		    </div>
+    	    </div>
+
+            <div class="container-fluid" id="adjust-student-data">
+            <!-- Currently we only need to change 2 props for registered students -->
+                <h2 style="float:left; padding-bottom: 10px;">Data below will be added to all students in list:</h1>
+
+                <form class="form-inline" style="margin-top: 10px;">
+                    <div class="form-group">
+                        <label>Student Category:</label>
+                        <input type="text" class="form-control"
+                            ng-model="ctrl.category"
+                            placeholder="Ex: AEP">
+                    </div>
+                    <div class="form-group" style="padding-left: 20px;">
+                        <label>Admission Date:</label>
+                        <input type="text" class="form-control"
+                            ng-model="ctrl.admissionDate"
+                            ng-blur="ctrl.formatAdmissionDate()"
+                            placeholder="Ex: 01-Feb-2017">
+                    </div>
+
+                    <!-- Error / warning for admission date formatting -->
+                    <div class="form-group"
+                        ng-show="ctrl.admissionDateFormatError"
+                        style="margin-left: 180px; margin-top: 20px; color: red; border: solid 2px red; padding: 2px; border-radius: 5px;">
+                        <span><strong>ERROR [{{ ctrl.admissionDateFormatErrorLocation }}]: USE FORMAT: DD-MMM-YYYY</strong></span>
+                    </div>
+                    <div class="form-group"
+                        ng-show="ctrl.admissionDateFormatWarning"
+                        style="margin-left: 180px; margin-top: 20px; border: solid 2px black; padding: 2px; border-radius: 5px; background-color: yellow;">
+                        <span><strong>WARNING: DATE EMPTY! DEFAULT IS CURRENT DATE</strong></span>
+                    </div>
+                </form>
+
+                <button type="button" class="btn btn-primary"
+                    style="margin-top: 20px; margin-left: 220px;"
+                    ng-click="ctrl.fixStudentData()">Fix Student Data!</button>
+
+                <button type="button" class="btn btn-danger"
+                    style="margin-top: 20px; margin-left: 20px;"
+                    ng-click="ctrl.clearChromeData();">Clear / Reset</button>
+            </div>
+
+            <div id="right-arrow">
+                <button id="right-button" ng-click="ctrl.scroll('R')">&gt;</button>
+            </div>
+        </div>
+
+    	<!-- Table shown below -->
+   		<div class="container-fluid" id="table-containers"
+      		ng-if="!ctrl.errorMessage && ctrl.delim">
+      		<!-- Buttons -->
+      		<div class="row">
+        		<div ng-repeat="title in ctrl.headerList" class="table-buttons"
+          			style="width: {{ ctrl.getWidth($index) }}px;">
+          			<button class="btn btn-primary table-buttons-minus" ng-click="ctrl.decreaseWidth($index);">-</button>
+          			<button class="btn btn-primary table-buttons-plus" ng-click="ctrl.increaseWidth($index);">+</button>
+        		</div>
+      		</div>
+
+      		<!-- Header row -->
+      		<div class="row">
+        		<div ng-repeat="title in ctrl.headerList" class="col-{{$index}}"
+          			style="width: {{ ctrl.getWidth($index) }}px;">
+          			{{ title }}
+        		</div>
+      		</div>
+
+      		<!-- cells -->
+      		<div class="row" ng-repeat="row in ctrl.dataArray">
+        		<div ng-repeat="prop in row" class="col-{{$index}}"
+          			style="width: {{ ctrl.getWidth($index) }}px;">
+          			{{ prop }}
+        		</div>
+      		</div>
+    	</div>
+
+    	<br>
+
+  	</body>
+</html>

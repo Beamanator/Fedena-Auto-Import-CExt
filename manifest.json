@@ -1,0 +1,55 @@
+{
+	"manifest_version": 2,
+	"name": "Fedena Extension - Auto Client Import",
+	"version": "0.3.2",
+	"description": "Fedena Extension - Enables automatic client import in Fedena",
+	"permissions": [
+		"identity",
+		"storage",
+		"tabs"
+	],
+
+	"content_scripts": [
+		{
+			"matches": [ "https://stars.fedena.com/*" ],
+			"js": [ "js/min/jquery-3.1.1.min.js",
+				"js/ErrorThrowingAPI.js",
+				"js/FirebaseContentScriptAPI.js",
+				"js/FixStudentData.js",
+				"js/MainContent.js"
+			]
+		},
+		{
+			"matches": [
+				"https://stars.fedena.com/student/admission1",
+				"https://stars.fedena.com/student/admission2/*",
+				"https://stars.fedena.com/student/admission4/*",
+				"https://stars.fedena.com/student/edit/*"
+			],
+			"js": [
+				"js/DropdownCodeContainer.js",
+				"js/FieldTranslator.js"
+			]
+		}
+	],
+	"background": {
+		"page": "background.html"
+	},
+	"browser_action": {
+		"default_icon": "icon.png",
+		"default_popup": "ImportPage.html"
+	},
+	"icons": {
+		"48": "icon48.png",
+    	"128": "icon128.png"
+    },
+    "content_security_policy":"script-src 'self' 'unsafe-eval' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
+    "oauth2": {
+    	"client_id": "197993359621-6q4s20irj442v5n7kpfd4ob54u88b8ih.apps.googleusercontent.com",
+    	"scopes": [
+      		"https://www.googleapis.com/auth/userinfo.email",
+      		"https://www.googleapis.com/auth/userinfo.profile"
+    	]
+  	},
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA20tPoEJrU6IouTlxhEgtCB3exSbK/XJ/mgI1c2S/11llvVZcQJ2ioVVrzabjvhS1MeEwmFmvk2ioBRp22LzfgFhqVsGDqXCub0+Tc3QQZp0tIJ6YOFy02NA/NSAbCdtg5fF7iqZIRG4DvYBQbkHS4SG/YbqYC05ZjhsnquP9FLn3I1Qpb2URViXJFduJklp5Cu85r+qEmwCNFHDuEIUXDFuV3qpA0EcH1mrsACNUW2RPshfpttgpDPNaoxQ8wBsreW9Bl4Rju6o2sgA+mK1K+X3qlpUKtu8QcP70ivGhscDm9J07qfvdYtUa8JQtvW26/HP9SVs7k4x/6+UaByYvBQIDAQAB"
+}

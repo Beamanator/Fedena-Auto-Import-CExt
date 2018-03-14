@@ -582,13 +582,25 @@ function insertBatch(formattedBatchID, batchElemId) {
 function insertGender(gender) {
 	var err = 0;
 
-	if (gender.toUpperCase() === "M") {
-		$('#student_gender_m').click();
-	} else if (gender.toUpperCase() === "F") {
-		$('#student_gender_f').click();
-	} else {
-		console.log("Error - gender " + gender + " not recognized by insertGender()");
-		err++;
+	gender = gender.toUpperCase();
+
+	switch(gender) {
+		// options for 'male' matching
+		case 'M':
+		case 'MALE':
+			$('#student_gender_m').click();
+			break;
+
+		// options for 'female' matching
+		case 'F':
+		case 'FEMALE':
+			$('#student_gender_f').click();
+			break;
+
+		// default = no matches = error
+		default:
+			let errMsg = `Error - gender <${gender}> not handled / invalid`;
+			err++;
 	}
 
 	return err;

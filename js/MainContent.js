@@ -588,7 +588,7 @@ function insertGender(gender) {
 		$('#student_gender_f').click();
 	} else {
 		console.log("Error - gender " + gender + " not recognized by insertGender()");
-		error++;
+		err++;
 	}
 
 	return err;

@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Fedena Extension - Auto Client Import",
-	"version": "0.3.3",
+	"version": "1.0.0",
 	"description": "Fedena Extension - Enables automatic client import in Fedena",
 	"permissions": [
 		"identity",

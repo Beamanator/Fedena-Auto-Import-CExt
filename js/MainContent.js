@@ -178,7 +178,7 @@ function ImportStudentUNHCR() {
 		var UNHCRNo = student[FT["UNHCR_CASE_NO"]];
 
 		// TODO: this id is crazy, and seems like it could change easily.
-		// 	Alex needs to make a better way of hard-coding html element IDs!
+		// 	Make a better way of hard-coding html element IDs!
 		var err = insertValue(UNHCRNo, 'student_additional_details_7575_additional_info');
 
 		// press "Save & proceed" button

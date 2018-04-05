@@ -102,13 +102,12 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 // Listener for messages from background.js & app.js
 // "clicked_browser_action" is our point for kicking things off
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
-
 	if ( request.message === "start_student_import" ) {
 		var keys = [
 			{'STUDENT_INDEX': '0'},
 			{'ACTION_STATE': 'IMPORTING_NEW_STUDENTS'},
-			{'STUDENT_DATA': request.value},
-			{'STUDENT_DATA_LENGTH': request.value.length},
+			{'STUDENT_DATA': request.data},
+			{'STUDENT_DATA_LENGTH': request.data.length},
 			{'AUTO_IMPORT': request.auto},
 			{'CLASS_DATA': request.classData},
 			{'OTHER_DATA': request.otherData}
@@ -736,7 +735,8 @@ function getStudentByIndex(index) {
 	});
 }
 
-// format dob into year-month-day, depending on if v1/v2/year has v1 > v2 or v2 > v1
+// format dob into year-month-day (YYYY-MM-DD),
+//  depending on if v1/v2/year has v1 > v2 or v2 > v1
 function formatDOBfield(dob) {
 	// remove '.' from beginning of dob string:
 	if (dob.indexOf('.') === 0) {
@@ -745,30 +745,81 @@ function formatDOBfield(dob) {
 
 	var dobArr = dob.split("/");
 
-	if (dobArr.length > 3 || dobArr.length < 3) {
-		console.log('invalid DOB format: ' + dob);
-		return undefined;
+	// error if too many '/' characters found
+	if ( dobArr.length > 3 ) {
+		console.log('invalid DOB format - too many "/" characters: ' + dob);
+		return 'undefined - error (too many "/" chars in DOB)';
 	}
 
-	var v1 = addLeadingZero( dobArr[0] );
-	var v2 = addLeadingZero( dobArr[1] );
-	var year = dobArr[2];
+	// 3 '/' chars -> treat '/' as delim
+	else if (dobArr.length == 3) {
+		var v1 = addLeadingZero( dobArr[0] );
+		var v2 = addLeadingZero( dobArr[1] );
+		var year = dobArr[2];
 
-	if (v2 <= 12) {
-		// v2 should be the month, so orig format is day-month-year
-		return year + '-' + v2 + '-' + v1;
-	} else {
-		// v2 should be the day, so orig format is month-day-year
-		return year + '-' + v1 + '-' + v2;
+		if (v2 <= 12) {
+			// v2 should be the month, so orig format is day-month-year
+			return year + '-' + v2 + '-' + v1;
+		} else {
+			// v2 should be the day, so orig format is month-day-year
+			return year + '-' + v1 + '-' + v2;
+		}
 	}
 
-	// old logic doesn't account for the fact that march 1 could look like 01-03-year.
-	//	Fedena wants year-month-day
-	// if (parseInt(v1) >= parseInt(v2)) {
-	// 	return year + "-" + v2 + "-" + v1;
-	// } else {
-	// 	return year + "-" + v1 + "-" + v2;
-	// }
+	// less than 3 '/' characters -> try using '-' as delim
+	else {
+		dobArr = dob.split('-');
+
+		// error if too many or too little '-' chars found
+		if (dobArr.length > 3 || dobArr.length < 3) {
+			console.log('invalid DOB format - cant match "DD/MM/YYYY" or ' +
+				'"DD-MMM-YYYY"');
+			return 'undefined - error (doesnt match "DD/MM/YYYY" or "DD-MMM-YYYY"';
+		}
+
+		let d = addLeadingZero( dobArr[0] );
+		let m = addLeadingZero( getMonthNumberFromName(dobArr[1]) );
+		let y = dobArr[2];
+
+		if (m == -1) {
+			console.log('month number error! - from ' + dobArr[1]);
+			return 'undefined - error in month number ' + dobArr[1];
+		}
+
+		return `${y}-${m}-${d}`;
+	}	
+}
+
+/**
+ * Function gets a month's # in the year (ex: january = 1, may = 5, dec = 12)
+ * and returns this number.
+ * 
+ * @param {string} monthCode - month (3-letter code or full name)
+ * @returns {number} - month's number, or -1 if not found
+ */
+function getMonthNumberFromName( monthCode ) {
+	let monthNumber = {
+		'jan': 1,	'january': 1,
+		'feb': 2,	'february': 2,
+		'mar': 3,	'march': 3,
+		'apr': 4,	'april': 4,
+		'may': 5,
+		'jun': 6,	'june': 6,
+		'jul': 7,	'july': 7,
+		'aug': 8,	'august': 8,
+		'sep': 9,	'sept': 9,		'september': 9,
+		'oct': 10,	'october': 10,
+		'nov': 11,	'november': 11,
+		'dec': 12,	'december': 12
+	}[monthCode.toLowerCase()];
+
+	// if undefined, no map found :(
+	if (monthNumber == undefined) {
+		console.log(`Couldn't match month code! (${monthCode})`);
+		monthNumber = -1;
+	}
+
+	return monthNumber;
 }
 
 // if # is less than 10 (1, 3, 9, etc) and the string 'num' is only 1 character, add a leading zero.

@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Fedena Extension - Auto Client Import",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Fedena Extension - Enables automatic client import in Fedena",
 	"permissions": [
 		"identity",
@@ -33,11 +33,14 @@
 		}
 	],
 	"background": {
-		"page": "background.html"
+		"page": "html/background.html"
 	},
+	"options_page": "html/options.html",
 	"browser_action": {
-		"default_icon": "icon.png",
-		"default_popup": "ImportPage.html"
+		"default_icon": {
+			"32": "icon.png"
+		},
+		"default_popup": "html/optionPageRedirect.html"
 	},
 	"icons": {
 		"48": "icon48.png",

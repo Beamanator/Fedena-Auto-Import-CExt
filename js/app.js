@@ -55,12 +55,16 @@
 			if (!Ctrl.admissionDateFormatError) {
 				countButtonClick('import_students');
 
-				chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+				chrome.tabs.query({
+					currentWindow: true,
+					url: 'https://stars.fedena.com/*'
+				}, function(tabs) {
 					var activeTab = tabs[0];
+					console.log('sending to tab:', activeTab);
 
 					chrome.tabs.sendMessage(activeTab.id, {
 						"message": "start_student_import",
-						"value": Ctrl.dataArray,
+						"data": Ctrl.dataArray,
 						"auto": Ctrl.auto,
 						"classData": {
 							"class": Ctrl.class,

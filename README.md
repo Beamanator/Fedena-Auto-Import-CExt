@@ -19,7 +19,7 @@ Adds the ability to automatically import student data into the Fedena student re
 **Important Note**: Spreadsheet columns name must exactly match the field names above, or else the import cannot tell which data you are importing!
 
 ## Where to Download
-Chrome web store
+Chrome web store download: https://chrome.google.com/webstore/detail/fedena-extension-auto-cli/fkdgpcjhiieaobggeohdlknbdlflahmk
     
 ## Developer notes
 1. This import was one of my first Chrome Extensions, so the message passing system may be a bit confusing.

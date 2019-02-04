@@ -10,6 +10,7 @@ function getFieldTranslator(deptCode) {
 		"STUDENT_FULL_NAME": 		"FULL NAME",
 		"GENDER": 					"GENDER",
 		"STUDENT_PHONE_NUMBER":		"PHONE NO",
+		"STUDENT_MOBILE_NUMBER":	"MOBILE NO",
 		"STUDENT_EMAIL": 			"EMAIL",
 		"DOB": 						"DATE OF BIRTH",
 		"NATIONALITY": 				"NATIONALITY",

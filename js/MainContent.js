@@ -263,6 +263,9 @@ function addStudent(studentObj) {
 
 	// student phone number
 	err += insertValue( studentObj[FT['STUDENT_PHONE_NUMBER']], 'student_phone1' );
+	
+	// student mobile number
+	err += insertValue( studentObj[FT['STUDENT_MOBILE_NUMBER']], 'student_phone2' );
 
 	// student category
 	err += insertValue( getDC( studentObj, FT, 'STUDENT_CATEGORY'), 'student_student_category_id' );

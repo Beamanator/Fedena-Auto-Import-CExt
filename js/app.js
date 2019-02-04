@@ -26,7 +26,7 @@
 			+ 'Required Fields:\n'
 				+ '\tFull name, Date of Birth, UNHCR No\n'
 			+ 'Optional Fields:\n'
-				+ '\tNationality, Gender, Phone No, Category, Email\n'
+				+ '\tNationality, Gender, Phone No, Mobile No, Category, Email,\n'
 				+ '\tParent Full name, Parent Relationship, Parent Phone';
 		Ctrl.auto = true;
 		Ctrl.scrollState = "L";

@@ -276,7 +276,9 @@ function addStudent(studentObj) {
 	// Nationality:
 	errCount += insertValue( getDC( studentObj, FT, 'NATIONALITY'),	'student_nationality_id' );
 
-	// DOB - only need to change value, not the label
+	// DOB - NOTE!!!! only need to change value, not the label!!!
+	// If you're confused why the label is not changing DON'T WORRY, the
+	// -> correct input field is being edited here, it will save the data correctly.
 	errCount += insertValue( formatDOBfield( studentObj[FT['DOB']] ),
 		'student\\[date_of_birth\\].calendar_field' );
 
@@ -762,10 +764,10 @@ function formatDOBfield(dob) {
 
 		if (v2 <= 12) {
 			// v2 should be the month, so orig format is day-month-year
-			return year + '-' + v2 + '-' + v1;
+			return `${year}-${v2}-${v1}`;
 		} else {
 			// v2 should be the day, so orig format is month-day-year
-			return year + '-' + v1 + '-' + v2;
+			return `${year}-${v1}-${v2}`;
 		}
 	}
 
@@ -777,7 +779,7 @@ function formatDOBfield(dob) {
 		if (dobArr.length > 3 || dobArr.length < 3) {
 			console.log('invalid DOB format - cant match "DD/MM/YYYY" or ' +
 				'"DD-MMM-YYYY"');
-			return 'undefined - error (doesnt match "DD/MM/YYYY" or "DD-MMM-YYYY"';
+			return 'undefined - error (doesnt match "DD/MM/YYYY" or "DD-MMM-YYYY")';
 		}
 
 		let d = addLeadingZero( dobArr[0] );

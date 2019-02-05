@@ -60,9 +60,7 @@
 					url: 'https://stars.fedena.com/*'
 				}, function(tabs) {
 					var activeTab = tabs[0];
-					console.log('sending to tab:', activeTab);
-
-					chrome.tabs.sendMessage(activeTab.id, {
+					const dataToSend = {
 						"message": "start_student_import",
 						"data": Ctrl.dataArray,
 						"auto": Ctrl.auto,
@@ -73,7 +71,12 @@
 						"otherData": {
 							"admissionDate": Ctrl.formattedAdmissionDate
 						}
-					});
+					};
+
+					console.log('student data to send:', dataToSend);
+					console.log('sending to tab:', activeTab);
+
+					chrome.tabs.sendMessage(activeTab.id, dataToSend);
 				});
 
 			} else {

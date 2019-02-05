@@ -252,32 +252,32 @@ function StartParentImport() {
 }
 
 function addStudent(studentObj) {
-	var err = 0;
+	var errCount = 0;
 	var FT = getFieldTranslator(); // TODO: add this code to local store & make it part of popup?
 
 	// first, middle, and last name:
-	err += splitStudentName( studentObj[FT['STUDENT_FULL_NAME']] );
+	errCount += splitStudentName( studentObj[FT['STUDENT_FULL_NAME']] );
 
 	// Gender:
-	err += insertGender( studentObj[FT['GENDER']] );
+	errCount += insertGender( studentObj[FT['GENDER']] );
 
 	// student phone number
-	err += insertValue( studentObj[FT['STUDENT_PHONE_NUMBER']], 'student_phone1' );
+	errCount += insertValue( studentObj[FT['STUDENT_PHONE_NUMBER']], 'student_phone1' );
 	
 	// student mobile number
-	err += insertValue( studentObj[FT['STUDENT_MOBILE_NUMBER']], 'student_phone2' );
+	errCount += insertValue( studentObj[FT['STUDENT_MOBILE_NUMBER']], 'student_phone2' );
 
 	// student category
-	err += insertValue( getDC( studentObj, FT, 'STUDENT_CATEGORY'), 'student_student_category_id' );
+	errCount += insertValue( getDC( studentObj, FT, 'STUDENT_CATEGORY'), 'student_student_category_id' );
 
 	// student email address
-	err += insertValue( studentObj[FT['STUDENT_EMAIL']], 		'student_email' );
+	errCount += insertValue( studentObj[FT['STUDENT_EMAIL']], 		'student_email' );
 
 	// Nationality:
-	err += insertValue( getDC( studentObj, FT, 'NATIONALITY'),	'student_nationality_id' );
+	errCount += insertValue( getDC( studentObj, FT, 'NATIONALITY'),	'student_nationality_id' );
 
 	// DOB - only need to change value, not the label
-	err += insertValue( formatDOBfield( studentObj[FT['DOB']] ),
+	errCount += insertValue( formatDOBfield( studentObj[FT['DOB']] ),
 		'student\\[date_of_birth\\].calendar_field' );
 
 	// Next: get & save Admission Date [from input element]
@@ -338,6 +338,7 @@ function addStudent(studentObj) {
 
 				// auto is from the popup's auto checkbox.
 				if (auto) {
+					debugger;
 					// automatically click 'save' to automate import
 					$('input.submit_button').click();
 				} else {
@@ -368,15 +369,15 @@ function addStudent(studentObj) {
 }
 
 function addParent(studentObj, FT) {
-	var err = 0;
+	var errCount = 0;
 
 	// var FT = getFieldTranslator();
 
 	// first and last name:
-	err += splitParentName( studentObj[FT["GUARDIAN_FULL_NAME"]] );
+	errCount += splitParentName( studentObj[FT["GUARDIAN_FULL_NAME"]] );
 
 	// import parent data: name & phone number
-	err += insertValue( studentObj[FT['GUARDIAN_PHONE_NUMBER']], 'guardian_office_phone1' );
+	errCount += insertValue( studentObj[FT['GUARDIAN_PHONE_NUMBER']], 'guardian_office_phone1' );
 
 	// insert parent's gender / relation!!! it's required!!
 	// console.log('Relationship: ', studentObj[FT['GUARDIAN_RELATIONSHIP']] );
@@ -590,18 +591,18 @@ function insertGender(gender) {
 		// options for 'male' matching
 		case 'M':
 		case 'MALE':
-			$('#student_gender_m').click();
+			document.querySelector('#student_gender_m').click();
 			break;
 
 		// options for 'female' matching
 		case 'F':
 		case 'FEMALE':
-			$('#student_gender_f').click();
+			document.querySelector('#student_gender_f').click();
 			break;
 
 		// default = no matches = error
 		default:
-			let errMsg = `Error - gender <${gender}> not handled / invalid`;
+			console.error(`Error - gender <${gender}> not handled / invalid`);
 			err++;
 	}
 

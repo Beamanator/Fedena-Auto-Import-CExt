@@ -48,15 +48,15 @@ $(document).ready(function(){
 					// Additional details page -> add UNHCR No & save client info
 					ImportStudentUNHCR();
 				} else if (url.indexOf("student/profile/") !== -1) {
-					// Student Profile page -> done importing, redirect to home page
-					navigateToTab('https://stars.fedena.com/user/dashboard');
-				} else if (url.indexOf('/user/dashboard') !== -1) {
-					// home page -> redirect to start next admission
+					// Student Profile page -> done importing, redirect to admission page
 					navigateToTab('/student/admission1');
+					// OLD: used to go to home, but as of Feb 2019, they have a different
+					// -> home page with "dashlets"
+					// navigateToTab('https://stars.fedena.com/user/dashboard');
 				} else {
-					// new page hit - stop client import!
+					// wrong page hit - stop client import!
 					console.error(
-						"ERROR: Not sure which tab we're on now! " +
+						"ERROR: Not sure what to do at current tab! " +
 						"Clearing student data so we don't do something unexpected."
 					);
 					clearStudentData();
@@ -259,7 +259,16 @@ function StartParentImport() {
 
 function addStudent(studentObj) {
 	var errCount = 0;
-	var FT = getFieldTranslator(); // TODO: add this code to local store & make it part of popup?
+	var FT;
+
+	try {
+		FT = getFieldTranslator(); // TODO: add this code to local store & make it part of popup?
+	} catch {
+		console.error(
+			'Field Translator not found - probably not on correct page ' +
+			'to start import??'
+		);
+	}
 
 	// first, middle, and last name:
 	errCount += splitStudentName( studentObj[FT['STUDENT_FULL_NAME']] );

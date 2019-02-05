@@ -338,7 +338,6 @@ function addStudent(studentObj) {
 
 				// auto is from the popup's auto checkbox.
 				if (auto) {
-					debugger;
 					// automatically click 'save' to automate import
 					$('input.submit_button').click();
 				} else {
@@ -585,7 +584,7 @@ function insertBatch(formattedBatchID, batchElemId) {
 function insertGender(gender) {
 	var err = 0;
 
-	gender = gender.toUpperCase();
+	gender = gender.toUpperCase().trim();
 
 	switch(gender) {
 		// options for 'male' matching

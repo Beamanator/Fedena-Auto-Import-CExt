@@ -17,7 +17,7 @@ function findMissing(input) {
 //    to look for values (id's) in dropdowns, copy / paste output from Chrome Console to getDC() below!
 function PrintDropdownToConsole(id) {
 	var obj = {};
-	$('#' + id + ' option').each(function() {
+	$(`#${id} option`).each(function() {
 		// obj[ $(this).val() ] = $(this).text().trim();
 		obj[ $(this).text().trim() ] = $(this).val();
 	});
@@ -25,7 +25,7 @@ function PrintDropdownToConsole(id) {
 	var dcText = '\nobj = {\n';
 
 	$.each( obj, function( key, value ) {
-		dcText += '\t\'' + key + '\': ' + value + ',\n';
+		dcText += `\t'${key}': ${value},\n`;
 		// dcText += '\t].indexOf(val) !== -1) { return ' + value + '; }\n'
 	});
 
@@ -41,7 +41,7 @@ function PrintDropdownToConsole(id) {
 // Function checks if value exists in below lists. If not, returns default value (def)
 function checkExist(val, origVal, dropdownName) {
 	if (val === undefined) {
-		console.log('ERROR IN ' + dropdownName + ' DROPDOWN --> <' + origVal + '> does not exist');
+		console.log(`ERROR IN ${dropdownName} DROPDOWN --> <${origVal}> does not exist`);
 	}
 
 	return val;
@@ -55,6 +55,8 @@ function getDC(st, FT, field) {
 	// get value from student:
 	var val = st[FT[field]];
 	var obj;
+
+	if (val) val = val.trim();
 
 	switch(field) {
 		case 'STUDENT_CATEGORY':

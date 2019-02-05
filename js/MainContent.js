@@ -287,9 +287,12 @@ function addStudent(studentObj) {
 
 	// student email address
 	errCount += insertValue( studentObj[FT['STUDENT_EMAIL']], 		'student_email' );
-
-	// Nationality:
+	
+	// student nationality
 	errCount += insertValue( getDC( studentObj, FT, 'NATIONALITY'),	'student_nationality_id' );
+	
+	// student language
+	errCount += insertValue( studentObj[FT['STUDENT_LANGUAGE']], 	'student_language' );
 
 	// DOB - NOTE!!!! only need to change value, not the label!!!
 	// If you're confused why the label is not changing DON'T WORRY, the

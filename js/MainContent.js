@@ -10,58 +10,64 @@ function getBatchID() { return 76438; }
 $(document).ready(function(){
 	getValueFromStorage('ACTION_STATE')
 	.then(function(action) {
+		const url = window.location.href;
+
 		switch(action) {
 			case 'IMPORTING_NEW_STUDENTS':
-				if (window.location.href === "https://stars.fedena.com/student/admission1") {
+				if (url === "https://stars.fedena.com/student/admission1") {
 					
 					StartClientImport( getImportStatusContinue() );
-				} else if (window.location.href.indexOf("student/admission1_2/") !== -1) {
-					var urlList = window.location.href.split('/');
+				} else if (url.indexOf("student/admission1_2/") !== -1) {
+					var urlList = url.split('/');
 					var id = urlList[urlList.length - 1];
 
 					// redirect to parent detail page
 					navigateToTab('/student/admission2/' + id);
-				} else if (window.location.href.indexOf("student/admission2/") !== -1) {
+				} else if (url.indexOf("student/admission2/") !== -1) {
 					// Parent / Guardian Details page
 					//	this page gets hit twice:
 					//		1) when entering parent data
 					//		2) after entering parent, just in case a 2nd parent is needed
 					StartParentImport();
-				} else if (window.location.href.indexOf("student/previous_data/") !== -1) {
+				} else if (url.indexOf("student/previous_data/") !== -1) {
 					// Previous Education Details page
-					var urlList = window.location.href.split('/');
+					var urlList = url.split('/');
 					var id = urlList[urlList.length - 1];
 
 					// redirect to Additional details page (UNHCR #)
 					navigateToTab('/student/admission4/' + id);
-				} else if (window.location.href.indexOf("student/admission3/") !== -1) {
+				} else if (url.indexOf("student/admission3/") !== -1) {
 					// Select Guardian as emergency contact page
-					var urlList = window.location.href.split('/');
+					var urlList = url.split('/');
 					var id = urlList[urlList.length - 1];
 
 					// click "Finish" button
 					// -> redirects to previous education details
 					$('input[name="commit"]').click();
-				} else if (window.location.href.indexOf("student/admission4/") !== -1) {
+				} else if (url.indexOf("student/admission4/") !== -1) {
 					// Additional details page -> add UNHCR No & save client info
 					ImportStudentUNHCR();
-				} else if (window.location.href.indexOf("student/profile/") !== -1) {
+				} else if (url.indexOf("student/profile/") !== -1) {
 					// Student Profile page -> done importing, redirect to home page
 					navigateToTab('https://stars.fedena.com/user/dashboard');
-				} else if (window.location.href.indexOf('/user/dashboard') !== -1) {
+				} else if (url.indexOf('/user/dashboard') !== -1) {
 					// home page -> redirect to start next admission
 					navigateToTab('/student/admission1');
 				} else {
 					// new page hit - stop client import!
+					console.error(
+						"ERROR: Not sure which tab we're on now! " +
+						"Clearing student data so we don't do something unexpected."
+					);
 					clearStudentData();
 				}
 				break;
 			case 'FIXING_STUDENT_DATA':
-				if (window.location.href.indexOf('/student/profile/') !== -1) {
+				if (url.indexOf('/student/profile/') !== -1) {
 					// at "Student Profile page"
 					// -> either click 'edit', or close tab
 					atStudentProfile();
-				} else if (window.location.href.indexOf('/student/edit/') !== -1) {
+				} else if (url.indexOf('/student/edit/') !== -1) {
 					// Edit student page
 					editStudent();
 				} else {

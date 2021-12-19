@@ -258,7 +258,7 @@
 			}
 
 			// catch year out of range
-			if (YYYY < 1900 || YYYY > 2020) {
+			if (YYYY < 1900 || YYYY > 2025) {
 				setAdmissionFormatError(true, "YEAR");
 				return;
 			}
